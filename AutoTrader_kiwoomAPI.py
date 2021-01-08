@@ -16,7 +16,7 @@ class KiwoomAPI(QAxWidget):
     
     def SetCallback(self):
         self.OnEventConnect.connect(self.Callback_onEventConnect)
-        #self.OnReceiveTrData.connect()
+        self.OnReceiveTrData.connect(self.Callback_OnReceiveTradeData)
         self.OnReceiveChejanData.connect(self.AfterOrderBalanceData_Callback)
 
 
@@ -41,7 +41,7 @@ class KiwoomAPI(QAxWidget):
         ret=self.dynamicCall("GetLoginInfo(Qstring)",tag)
         return ret
     
-    #GetInfo
+    #GetInfo: Return Stock Code Korean Name
     def GetMasterCodeName(self,code):
         codeName=self.dynamicCall("GetMasterCodeName(QString)",code)
         return codeName
@@ -74,6 +74,37 @@ class KiwoomAPI(QAxWidget):
         print(self.GetAfterOrderBalanceData(302)) #종목명
         print(self.GetAfterOrderBalanceData(900)) #주문수량
         print(self.GetAfterOrderBalanceData(901)) #주문가격
+    
+    #Request Trading Data To Server (Transaction)
+    #SetInputValue(TR)-> TR Request->Callback(OnReceiveTradeData)->GetData(In Callback Method)
+   
+    def SetInputValue(self, id, value):
+        self.dynamicCall("SetInputValue(QString, QString)", id, value)
+
+    def Comm_RequestData(self, rqname, trcode, next, screen_no):
+        self.dynamicCall("CommRqData(QString, QString, int, QString)", rqname, trcode, next, screen_no)
+        self.tradeData_event_loop = QEventLoop()
+        self.tradeData_event_loop.exec_()
+    
+    def Callback_OnReceiveTradeData(self, screen_no, rqname, trcode, record_name, next, unused1, unused2, unused3, unused4):
+        try:
+            self.tradeData_event_loop.exit()
+        except AttributeError:
+            pass
+
+    def Comm_GetData(self, code, real_type, field_name, index, item_name):
+        ret = self.dynamicCall("CommGetData(QString, QString, QString, int, QString)", code, real_type, field_name, index, item_name)
+        return ret.strip()
+    
+   
+    #Get Received Data Count
+    def GetRepeatCount(self, trcode, rqname):
+        ret = self.dynamicCall("GetRepeatCnt(QString, QString)", trcode, rqname)
+        return ret
+
+    #opw0001: 예수금 상세현황 요청
+    def _opw00001(self, rqname, trcode):
+        self.d2_deposit = self.Comm_GetData(trcode, "", rqname, 0, "d+2추정예수금")
 
         
 

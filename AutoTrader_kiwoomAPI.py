@@ -87,6 +87,18 @@ class KiwoomAPI(QAxWidget):
         self.tradeData_event_loop.exec_()
     
     def Callback_OnReceiveTradeData(self, screen_no, rqname, trcode, record_name, next, unused1, unused2, unused3, unused4):
+        #연속된 데이터가 더 있는지 확인
+        if next=='2':
+            self.remained_data=True
+        else:
+            self.remained_data=False
+        #리퀘스트 종류에 따른 처리
+        if rqname =="opt10081_rq":
+            self._opt10081(rqname,trcode)
+        elif rqname == "opw00001_req":
+            self._opw00001(rqname, trcode)
+        elif rqname == "opw00018_req":
+            self._opw00018(rqname, trcode)
         try:
             self.tradeData_event_loop.exit()
         except AttributeError:
@@ -102,10 +114,59 @@ class KiwoomAPI(QAxWidget):
         ret = self.dynamicCall("GetRepeatCnt(QString, QString)", trcode, rqname)
         return ret
 
-    #opw0001: 예수금 상세현황 요청
-    def _opw00001(self, rqname, trcode):
-        self.d2_deposit = self.Comm_GetData(trcode, "", rqname, 0, "d+2추정예수금")
+    #Util: 왼쪽0 제거 및 천자리 쉼표 추가.
+    @staticmethod
+    def ChangeFormat(data):
+        strip_data = data.lstrip('-0')
+        if strip_data == '':
+            strip_data = '0'
 
+        try:
+            format_data = format(int(strip_data), ',d')
+        except:
+            format_data = format(float(strip_data))
+
+        if data.startswith('-'):
+            format_data = '-' + format_data
+
+        return format_data
+    
+    #opw0001: 예수금 상세현황 요청->이에 대한 처리
+    def _opw00001(self, rqname, trcode):
+        d2_deposit = self.Comm_GetData(trcode, "", rqname, 0, "d+2추정예수금")
+        self.d2_deposit = KiwoomAPI.ChangeFormat(d2_deposit)
+
+    #opt10081: 주식 일봉 차트 조회 요청(여러개의 데이터들어옴)->이에 대한 처리
+    def _opt10081(self,rqname,trcode):
+        dataCount=self.GetRepeatCount(trcode,rqname)
+
+        for i in range(dataCount):
+            date=self.Comm_GetData(trcode,"",rqname,i,"일자")
+            open=self.Comm_GetData(trcode,"",rqname,i,"시가")
+            high=self.Comm_GetData(trcode,"",rqname,i,"고가")
+            low = self.Comm_GetData(trcode, "", rqname, i, "저가")
+            close = self.Comm_GetData(trcode, "", rqname, i, "현재가")
+            volume = self.Comm_GetData(trcode, "", rqname, i, "거래량")
+            print(date, open, high, low, close, volume)
+
+    #opw00018: 계좌평가잔고내역 요청->이에 대한 처리
+    def _opw00018(self, rqname,trcode):
+        total_purchase_price = self.Comm_GetData(trcode, "", rqname, 0, "총매입금액")
+        total_eval_price = self.Comm_GetData(trcode, "", rqname, 0, "총평가금액")
+        total_eval_profit_loss_price = self.Comm_GetData(trcode, "", rqname, 0, "총평가손익금액")
+        total_earning_rate = self.Comm_GetData(trcode, "", rqname, 0, "총수익률(%)")
+        estimated_deposit = self.Comm_GetData(trcode, "", rqname, 0, "추정예탁자산")
+
+        print(KiwoomAPI.ChangeFormat(total_purchase_price))
+        print(KiwoomAPI.ChangeFormat(total_eval_price))
+        print(KiwoomAPI.ChangeFormat(total_eval_profit_loss_price))
+        print(KiwoomAPI.ChangeFormat(total_earning_rate))
+        print(KiwoomAPI.ChangeFormat(estimated_deposit))
         
+
+
+
+
+
 
 

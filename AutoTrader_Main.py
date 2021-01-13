@@ -25,6 +25,11 @@ class TraderWindow(QMainWindow,uiForm_class):
         self.timer.start(1000) #1 second
         self.timer.timeout.connect(self.timeout_callback)
 
+        # Timer2
+        self.timer2 = QTimer(self)
+        self.timer2.start(1000*10) #10 second
+        self.timer2.timeout.connect(self.timeout2_callback)
+
         #stock select callback
         self.UI_StockSelectLineEdit.textChanged.connect(self.StockSelect_changedCallback)
 
@@ -49,6 +54,11 @@ class TraderWindow(QMainWindow,uiForm_class):
         else:
             stateMessage="서버 미연결"
         self.statusbar.showMessage(stateMessage+" | "+timeMessageStr)
+
+    def timeout2_callback(self):
+        if self.UI_realTimeBalance_checkBox.isChecked():
+            self.CheckBalance()
+
 
     def StockSelect_changedCallback(self):
         code=self.UI_StockSelectLineEdit.text()

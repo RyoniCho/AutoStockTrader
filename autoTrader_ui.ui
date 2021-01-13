@@ -258,7 +258,10 @@
       </property>
      </column>
     </widget>
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QCheckBox" name="UI_realTimeBalance_checkBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>270</x>
@@ -269,6 +272,9 @@
      </property>
      <property name="text">
       <string>실시간조회</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QPushButton" name="UI_checkBalance_pushButton">

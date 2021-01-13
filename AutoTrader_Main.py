@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5 import uic
 import sys
 from AutoTrader_kiwoomAPI import *
+import time
 
 
 #Load pyqt ui file
@@ -33,8 +34,9 @@ class TraderWindow(QMainWindow,uiForm_class):
         accounts=self.kiwoomApi.GetLoginInfo("ACCNO")
         accountList=accounts.split(';')[0:account_count]
         self.UI_accountInfo.addItems(accountList)
-
+        
         self.UI_OrderButton.clicked.connect(self.SendOrder)
+        self.UI.checkBalance_pushButton.clicked.connect(self.CheckBalance)
 
     def timeout_callback(self):
         currentTime=QTime.currentTime()
@@ -64,8 +66,51 @@ class TraderWindow(QMainWindow,uiForm_class):
         count=self.UI_countSpinBox.value()
         price=self.UI_PriceSpinBox.value()
 
-        self.kiwoomApi.SendOrder("send_order_req","0101",account,orderType,code,count,price,priceType,""
-        )
+        self.kiwoomApi.SendOrder("send_order_req","0101",account,orderType,code,count,price,priceType,"")
+    
+    def CheckBalance(self):
+        self.kiwoomApi.Reset_opw00018_output()
+
+        account_number = self.kiwoomApi.GetLoginInfo("ACCNO")
+        account_number = account_number.split(';')[0]
+        #opw00018(계좌평가 잔고내역)
+        self.kiwoomApi.SetInputValue("계좌번호", account_number)
+        self.kiwoomApi.Comm_RequestData("opw00018_req", "opw00018", 0, "2000")
+
+        while self.kiwoomApi.remained_data:
+            time.sleep(0.2)
+            self.kiwoomApi.SetInputValue("계좌번호", account_number)
+            self.kiwoomApi.Comm_RequestData("opw00018_req", "opw00018", 2, "2000")
+        
+        # opw00001 (예수금내역)
+        self.kiwoomApi.SetInputValue("계좌번호", account_number)
+        self.kiwoomApi.Comm_RequestData("opw00001_req", "opw00001", 0, "2000")
+
+
+        # Set Deposit UI (예수금)
+        item = QTableWidgetItem(self.kiwoomApi.d2_deposit)
+        item.setTextAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        self.UI_deposit_tableWidget.setItem(0, 0, item)
+
+        for i in range(1, 6):
+            item = QTableWidgetItem(self.kiwoomApi.opw00018_output['single'][i - 1])
+            item.setTextAlignment(Qt.AlignVCenter | Qt.AlignRight)
+            self.UI_deposit_tableWidget.setItem(0, i, item)
+
+        self.UI_deposit_tableWidget.resizeRowsToContents()
+
+        # Set Balance UI (계좌평가잔고내역)
+        item_count = len(self.kiwoomApi.opw00018_output['multi'])
+        self.UI_balance_tableWidget.setRowCount(item_count)
+
+        for j in range(item_count):
+            row = self.kiwoomApi.opw00018_output['multi'][j]
+            for i in range(len(row)):
+                item = QTableWidgetItem(row[i])
+                item.setTextAlignment(Qt.AlignVCenter | Qt.AlignRight)
+                self.UI_balance_tableWidget.setItem(j, i, item)
+
+        self.UI_balance_tableWidget.resizeRowsToContents()
 
 
 
@@ -81,3 +126,4 @@ if __name__=="__main__":
     traderWindow=TraderWindow()
     traderWindow.show()
     app.exec_()
+   

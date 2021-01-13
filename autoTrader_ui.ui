@@ -170,7 +170,7 @@
     <property name="title">
      <string>잔고 및 보유종목현황</string>
     </property>
-    <widget class="QTableWidget" name="tableWidget">
+    <widget class="QTableWidget" name="UI_deposit_tableWidget">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -214,7 +214,7 @@
       </property>
      </column>
     </widget>
-    <widget class="QTableWidget" name="tableWidget_2">
+    <widget class="QTableWidget" name="UI_balance_tableWidget">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -267,7 +267,7 @@
       <string>실시간조회</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="UI_checkBalance_pushButton">
      <property name="geometry">
       <rect>
        <x>370</x>

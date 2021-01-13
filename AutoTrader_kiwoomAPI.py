@@ -130,6 +130,20 @@ class KiwoomAPI(QAxWidget):
             format_data = '-' + format_data
 
         return format_data
+    @staticmethod
+    def ChangeFormat2(data):
+        strip_data = data.lstrip('-0')
+
+        if strip_data == '':
+            strip_data = '0'
+
+        if strip_data.startswith('.'):
+            strip_data = '0' + strip_data
+
+        if data.startswith('-'):
+            strip_data = '-' + strip_data
+
+        return strip_data
     
     #opw0001: 예수금 상세현황 요청->이에 대한 처리
     def _opw00001(self, rqname, trcode):
@@ -157,11 +171,54 @@ class KiwoomAPI(QAxWidget):
         total_earning_rate = self.Comm_GetData(trcode, "", rqname, 0, "총수익률(%)")
         estimated_deposit = self.Comm_GetData(trcode, "", rqname, 0, "추정예탁자산")
 
-        print(KiwoomAPI.ChangeFormat(total_purchase_price))
-        print(KiwoomAPI.ChangeFormat(total_eval_price))
-        print(KiwoomAPI.ChangeFormat(total_eval_profit_loss_price))
-        print(KiwoomAPI.ChangeFormat(total_earning_rate))
-        print(KiwoomAPI.ChangeFormat(estimated_deposit))
+        # print(KiwoomAPI.ChangeFormat(total_purchase_price))
+        # print(KiwoomAPI.ChangeFormat(total_eval_price))
+        # print(KiwoomAPI.ChangeFormat(total_eval_profit_loss_price))
+        # print(KiwoomAPI.ChangeFormat(total_earning_rate))
+        # print(KiwoomAPI.ChangeFormat(estimated_deposit))
+
+        self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(total_purchase_price))
+        self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(total_eval_price))
+        self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(total_eval_profit_loss_price))
+        self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(estimated_deposit))
+
+        total_earning_rate = KiwoomAPI.ChangeFormat(total_earning_rate)
+
+        #모의투자일경우의 처리
+        if self.GetCurrentServerType():
+            total_earning_rate = float(total_earning_rate) / 100
+            total_earning_rate = str(total_earning_rate)
+
+        self.opw00018_output['single'].append(total_earning_rate)
+        
+
+        #multi data
+        rows=self.GetRepeatCount(trcode,rqname)
+        for i in range(rows):
+            name=self.Comm_GetData(trcode,"",rqname,i,"종목명")
+            quantity=self.Comm_GetData(trcode,"",rqname,i,"보유수량")
+            purchase_price = self.Comm_GetData(trcode, "", rqname, i, "매입가")
+            current_price = self.Comm_GetData(trcode, "", rqname, i, "현재가")
+            eval_profit_loss_price = self.Comm_GetData(trcode, "", rqname, i, "평가손익")
+            earning_rate = self.Comm_GetData(trcode, "", rqname, i, "수익률(%)")
+
+            quantity = KiwoomAPI.ChangeFormat(quantity)
+            purchase_price = KiwoomAPI.ChangeFormat(purchase_price)
+            current_price = KiwoomAPI.ChangeFormat(current_price)
+            eval_profit_loss_price = KiwoomAPI.ChangeFormat(eval_profit_loss_price)
+            earning_rate = KiwoomAPI.ChangeFormat2(earning_rate)
+
+            self.opw00018_output['multi'].append([name, quantity, purchase_price, current_price,eval_profit_loss_price, earning_rate])
+    
+    def Reset_opw00018_output(self):
+        self.opw00018_output = {'single': [], 'multi': []}
+    
+    def GetCurrentServerType(self):
+        ret = self.dynamicCall("KOA_Functions(QString, QString)", "GetServerGubun", "")
+        return ret
+            
+            
+
         
 
 

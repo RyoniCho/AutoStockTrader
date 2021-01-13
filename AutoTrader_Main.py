@@ -7,7 +7,7 @@ import time
 
 
 #Load pyqt ui file
-uiForm_class=uic.loadUiType("autoTrader_ui.ui")[0]
+uiForm_class=uic.loadUiType("AutoTrader/autoTrader_ui.ui")[0]
 
 class TraderWindow(QMainWindow,uiForm_class):
     def __init__(self):
@@ -40,8 +40,12 @@ class TraderWindow(QMainWindow,uiForm_class):
         accountList=accounts.split(';')[0:account_count]
         self.UI_accountInfo.addItems(accountList)
         
+        #set call back
         self.UI_OrderButton.clicked.connect(self.SendOrder)
         self.UI_checkBalance_pushButton.clicked.connect(self.CheckBalance)
+
+        #Load AutoStock List
+        Load_AutoStockList()
 
     def timeout_callback(self):
         currentTime=QTime.currentTime()
@@ -123,6 +127,42 @@ class TraderWindow(QMainWindow,uiForm_class):
 
         self.UI_balance_tableWidget.resizeRowsToContents()
 
+    def Load_AutoStockList(self):
+        f = open("buy_list.txt", 'rt')
+        buy_list = f.readlines()
+        f.close()
+
+        f = open("sell_list.txt", 'rt')
+        sell_list = f.readlines()
+        f.close()
+
+        row_count = len(buy_list) + len(sell_list)
+        self.UI_autoSelectStock_tableWidget.setRowCount(row_count)
+
+        # buy list
+        for j in range(len(buy_list)):
+            row_data = buy_list[j]
+            split_row_data = row_data.split(';')
+            split_row_data[1] = self.kiwoomApi.GetMasterCodeName(split_row_data[1].rsplit())
+
+            for i in range(len(split_row_data)):
+                item = QTableWidgetItem(split_row_data[i].rstrip())
+                item.setTextAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+                self.UI_autoSelectStock_tableWidget.setItem(j, i, item)
+
+        # sell list
+        for j in range(len(sell_list)):
+            row_data = sell_list[j]
+            split_row_data = row_data.split(';')
+            split_row_data[1] = self.kiwoomApi.GetMasterCodeName(split_row_data[1].rstrip())
+
+            for i in range(len(split_row_data)):
+                item = QTableWidgetItem(split_row_data[i].rstrip())
+                item.setTextAlignment(Qt.AlignVCenter | Qt.AlignCenter)
+                self.UI_autoSelectStock_tableWidget.setItem(len(buy_list) + j, i, item)
+
+        self.UI_autoSelectStock_tableWidget.resizeRowsToContents()
+
 
 
 
@@ -138,3 +178,10 @@ if __name__=="__main__":
     traderWindow.show()
     app.exec_()
    
+
+
+
+
+
+
+

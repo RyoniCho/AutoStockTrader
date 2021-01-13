@@ -5,8 +5,9 @@ import sys
 from AutoTrader_kiwoomAPI import *
 import time
 
-
+import os
 #Load pyqt ui file
+
 uiForm_class=uic.loadUiType("AutoTrader/autoTrader_ui.ui")[0]
 
 class TraderWindow(QMainWindow,uiForm_class):
@@ -45,7 +46,7 @@ class TraderWindow(QMainWindow,uiForm_class):
         self.UI_checkBalance_pushButton.clicked.connect(self.CheckBalance)
 
         #Load AutoStock List
-        Load_AutoStockList()
+        self.Load_AutoStockList()
 
     def timeout_callback(self):
         currentTime=QTime.currentTime()
@@ -128,11 +129,11 @@ class TraderWindow(QMainWindow,uiForm_class):
         self.UI_balance_tableWidget.resizeRowsToContents()
 
     def Load_AutoStockList(self):
-        f = open("buy_list.txt", 'rt')
+        f = open("AutoTrader/buy_list.txt", 'rt',encoding='utf-8')
         buy_list = f.readlines()
         f.close()
 
-        f = open("sell_list.txt", 'rt')
+        f = open("AutoTrader/sell_list.txt", 'rt',encoding='utf-8')
         sell_list = f.readlines()
         f.close()
 

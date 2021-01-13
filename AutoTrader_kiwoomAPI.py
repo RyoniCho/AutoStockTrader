@@ -180,7 +180,7 @@ class KiwoomAPI(QAxWidget):
         self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(total_purchase_price))
         self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(total_eval_price))
         self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(total_eval_profit_loss_price))
-        self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(estimated_deposit))
+      
 
         total_earning_rate = KiwoomAPI.ChangeFormat(total_earning_rate)
 
@@ -190,6 +190,7 @@ class KiwoomAPI(QAxWidget):
             total_earning_rate = str(total_earning_rate)
 
         self.opw00018_output['single'].append(total_earning_rate)
+        self.opw00018_output['single'].append(KiwoomAPI.ChangeFormat(estimated_deposit))
         
 
         #multi data

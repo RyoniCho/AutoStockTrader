@@ -162,9 +162,9 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>30</y>
+      <y>20</y>
       <width>501</width>
-      <height>301</height>
+      <height>431</height>
      </rect>
     </property>
     <property name="title">
@@ -173,10 +173,10 @@
     <widget class="QTableWidget" name="UI_deposit_tableWidget">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>20</x>
        <y>40</y>
        <width>451</width>
-       <height>51</height>
+       <height>101</height>
       </rect>
      </property>
      <property name="rowCount">
@@ -217,12 +217,16 @@
     <widget class="QTableWidget" name="UI_balance_tableWidget">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>100</y>
+       <x>20</x>
+       <y>150</y>
        <width>451</width>
-       <height>161</height>
+       <height>221</height>
       </rect>
      </property>
+     <property name="rowCount">
+      <number>1</number>
+     </property>
+     <row/>
      <column>
       <property name="text">
        <string>종목명</string>
@@ -258,7 +262,7 @@
      <property name="geometry">
       <rect>
        <x>270</x>
-       <y>270</y>
+       <y>390</y>
        <width>87</width>
        <height>20</height>
       </rect>
@@ -270,8 +274,8 @@
     <widget class="QPushButton" name="UI_checkBalance_pushButton">
      <property name="geometry">
       <rect>
-       <x>370</x>
-       <y>260</y>
+       <x>360</x>
+       <y>380</y>
        <width>113</width>
        <height>41</height>
       </rect>

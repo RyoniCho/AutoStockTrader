@@ -36,7 +36,7 @@ class TraderWindow(QMainWindow,uiForm_class):
         self.UI_accountInfo.addItems(accountList)
         
         self.UI_OrderButton.clicked.connect(self.SendOrder)
-        self.UI.checkBalance_pushButton.clicked.connect(self.CheckBalance)
+        self.UI_checkBalance_pushButton.clicked.connect(self.CheckBalance)
 
     def timeout_callback(self):
         currentTime=QTime.currentTime()
@@ -102,6 +102,7 @@ class TraderWindow(QMainWindow,uiForm_class):
         # Set Balance UI (계좌평가잔고내역)
         item_count = len(self.kiwoomApi.opw00018_output['multi'])
         self.UI_balance_tableWidget.setRowCount(item_count)
+        print("00018:{}".format(item_count))
 
         for j in range(item_count):
             row = self.kiwoomApi.opw00018_output['multi'][j]

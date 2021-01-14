@@ -46,6 +46,11 @@ class KiwoomAPI(QAxWidget):
         codeName=self.dynamicCall("GetMasterCodeName(QString)",code)
         return codeName
 
+    def GetCodeListByMarket(self, market):
+        codeList = self.dynamicCall("GetCodeListByMarket(QString)", market)
+        codeList = codeList.split(';')
+        return codeList[:-1]
+
     #ORDER
 
     def SendOrder(self,rqname,screenNo,accNo,orderType,code,quantity,price,hoga,orderNo):

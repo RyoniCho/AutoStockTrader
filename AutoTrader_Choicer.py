@@ -1,4 +1,7 @@
 from AutoTrader_kiwoomAPI import *
+from PyQt5.QtWidgets import *
+import sys
+
 
 MARKET_KOSPI=0
 MARKET_KOSDAQ=10
@@ -22,7 +25,8 @@ class Choicer:
 
 
 if __name__ == "__main__":
+    app=QApplication(sys.argv)
     choicer=Choicer()
     choicer.Run()
-    
+
         

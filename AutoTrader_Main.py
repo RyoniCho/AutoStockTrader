@@ -174,11 +174,11 @@ class TraderWindow(QMainWindow,uiForm_class):
     def AutoStockOrder(self):
         hoga_lookup = {'지정가': "00", '시장가': "03"}
 
-        f = open("AutoTrader/buy_list.txt", 'rt')
+        f = open("AutoTrader/buy_list.txt", 'rt',encoding='utf-8')
         buy_list = f.readlines()
         f.close()
 
-        f = open("AutoTrader/sell_list.txt", 'rt')
+        f = open("AutoTrader/sell_list.txt", 'rt',encoding='utf-8')
         sell_list = f.readlines()
         f.close()
 
@@ -212,7 +212,7 @@ class TraderWindow(QMainWindow,uiForm_class):
             buy_list[i] = buy_list[i].replace("매수전", "주문완료")
 
         # file update
-        f = open("buy_list.txt", 'wt')
+        f = open("buy_list.txt", 'wt',encoding='utf-8')
         for row_data in buy_list:
             f.write(row_data)
         f.close()
@@ -222,7 +222,7 @@ class TraderWindow(QMainWindow,uiForm_class):
             sell_list[i] = sell_list[i].replace("매도전", "주문완료")
 
         # file update
-        f = open("sell_list.txt", 'wt')
+        f = open("sell_list.txt", 'wt',encoding='utf-8')
         for row_data in sell_list:
             f.write(row_data)
         f.close()

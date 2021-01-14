@@ -166,7 +166,14 @@ class KiwoomAPI(QAxWidget):
             low = self.Comm_GetData(trcode, "", rqname, i, "저가")
             close = self.Comm_GetData(trcode, "", rqname, i, "현재가")
             volume = self.Comm_GetData(trcode, "", rqname, i, "거래량")
-            print(date, open, high, low, close, volume)
+            #print(date, open, high, low, close, volume)
+
+            self.dailyData['date'].append(date)
+            self.dailyData['open'].append(int(open))
+            self.dailyData['high'].append(int(high))
+            self.dailyData['low'].append(int(low))
+            self.dailyData['close'].append(int(close))
+            self.dailyData['volume'].append(int(volume))
 
     #opw00018: 계좌평가잔고내역 요청->이에 대한 처리
     def _opw00018(self, rqname,trcode):

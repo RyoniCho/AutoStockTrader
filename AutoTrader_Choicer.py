@@ -2,6 +2,7 @@ from AutoTrader_kiwoomAPI import *
 from PyQt5.QtWidgets import *
 import sys
 import time
+import datetime
 from pandas import DataFrame
 
 
@@ -18,8 +19,19 @@ class Choicer:
        
 
     def Run(self):
-        df=self.GetDailyData("005935","20200103")
-        print(df)
+        # df=self.GetDailyData("005935","20200103")
+        # print(df)
+
+        #num = len(self.kosdaqCodes)
+
+        for i, code in enumerate(self.kosdaqCodes):
+            #print(i, '/', num)
+            if self.CheckSoringStock(code):
+                print("코스닥급등주: ", code)
+
+        for code in self.kosdaqCodes:
+            if self.CheckSoringStock(code):
+                print("코스피급등주:",code)
 
         
     def GetCodeList(self):
@@ -38,6 +50,37 @@ class Choicer:
 
         df=DataFrame(self.kiwoomApi.dailyData,columns=['open','high','low','close','volume'],index=self.kiwoomApi.dailyData['date'])
         return df
+    
+    #급등주 체크
+    def CheckSoringStock(self,code):
+        today=datetime.datetime.today().strftime("%Y%m%d")
+        df=self.GetDailyData(code,today)
+        volumes=df['volume']
+        
+        #20일치 이상 필요. 예외처리
+        if len(volumes)<21:
+            return False
+        
+        for i,vol in enumerate(volumes):
+            if i==0:
+                todayVolume=vol
+            elif 1<=i<=20:
+                sum_volume+=vol
+            else:
+                break
+        averageVolume=sum_volume/20
+        #평균 거래량의 1000% 초과시
+        if todayVolume>averageVolume*10:
+            return True
+        
+        return False
+
+        
+
+       
+
+
+
 
 
 
@@ -45,5 +88,6 @@ if __name__ == "__main__":
     app=QApplication(sys.argv)
     choicer=Choicer()
     choicer.Run()
+
 
         

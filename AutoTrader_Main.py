@@ -136,11 +136,11 @@ class TraderWindow(QMainWindow,uiForm_class):
         self.UI_balance_tableWidget.resizeRowsToContents()
 
     def Load_AutoStockList(self):
-        f = open("AutoTrader/buy_list.txt", 'rt',encoding='utf-8')
+        f = open("buy_list.txt", 'rt',encoding='utf-8')
         buy_list = f.readlines()
         f.close()
 
-        f = open("AutoTrader/sell_list.txt", 'rt',encoding='utf-8')
+        f = open("sell_list.txt", 'rt',encoding='utf-8')
         sell_list = f.readlines()
         f.close()
 

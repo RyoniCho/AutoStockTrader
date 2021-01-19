@@ -10,6 +10,11 @@ from pandas import DataFrame
 MARKET_KOSPI=0
 MARKET_KOSDAQ=10
 
+KOSDAQ_INSIDE1000=0
+KOSDAQ_OUTSIDE1000=1
+KOSPI_INSIDE1000=2
+KOSPI_OUTSIDE1000=3
+
 
 class Choicer:
     def __init__(self):
@@ -18,22 +23,26 @@ class Choicer:
         self.GetCodeList()
        
 
-    def Run(self):
+    def Run(self,runType):
         # df=self.GetDailyData("005935","20200103")
         # print(df)
+        num = len(self.kosdaqCodes)
+        print("Kospi Code count",len(self.kospiCodes))
+        print("Kodaq Code count",len(self.kosdaqCodes))
 
-        #num = len(self.kosdaqCodes)
+        if runType==KOSDAQ_INSIDE1000:
+            self.SearchSoringStock(self.kosdaqCodes,True)
+        elif runType==KOSDAQ_OUTSIDE1000:
+            self.SearchSoringStock(self.kosdaqCodes,False)
+        elif runType==KOSPI_INSIDE1000:
+            self.SearchSoringStock(self.kospiCodes,True)
+        elif runType==KOSPI_OUTSIDE1000:
+            self.SearchSoringStock(self.kospiCodes,False)
 
-        for i, code in enumerate(self.kosdaqCodes):
-            #print(i, '/', num)
-            if self.CheckSoringStock(code):
-                print("코스닥급등주: ", code)
 
-        for code in self.kosdaqCodes:
-            if self.CheckSoringStock(code):
-                print("코스피급등주:",code)
+       
 
-        
+    
     def GetCodeList(self):
         self.kospiCodes = self.kiwoomApi.GetCodeListByMarket(MARKET_KOSPI)
         self.kosdaqCodes = self.kiwoomApi.GetCodeListByMarket(MARKET_KOSDAQ)
@@ -61,6 +70,9 @@ class Choicer:
         if len(volumes)<21:
             return False
         
+        todayVolume=0
+        sum_volume=0
+
         for i,vol in enumerate(volumes):
             if i==0:
                 todayVolume=vol
@@ -74,6 +86,36 @@ class Choicer:
             return True
         
         return False
+    def UpdateBuyList(self,buyList):
+        with open("buy_list.txt","wt",encoding='utf-8') as f:
+            for code in buyList:
+                f.writelines("매수;{};시장가;10;0;매수전\n".format(code))
+        
+    def SearchSoringStock(self,codes,inside1000):
+        
+        buyList=list()
+        num = len(codes)
+        for i, code in enumerate(codes):
+
+            if inside1000 ==False and i<1000:
+                continue
+                
+            print(i, '/', num)
+         
+            if i % 99 == 0:
+                print("process cool down (100)")
+                time.sleep(60)
+               
+            if i == 999:
+                print("process cool down (1000)")
+                break
+         
+
+            if self.CheckSoringStock(code):
+                buyList.append(code)
+                print("급등주: ", code)
+        
+        self.UpdateBuyList(buyList)
 
         
 
@@ -87,7 +129,7 @@ class Choicer:
 if __name__ == "__main__":
     app=QApplication(sys.argv)
     choicer=Choicer()
-    choicer.Run()
+    choicer.Run(KOSPI_INSIDE1000)
 
 
         

@@ -8,7 +8,7 @@ import time
 import os
 #Load pyqt ui file
 
-uiForm_class=uic.loadUiType("AutoTrader/autoTrader_ui.ui")[0]
+uiForm_class=uic.loadUiType("autoTrader_ui.ui")[0]
 
 class TraderWindow(QMainWindow,uiForm_class):
     def __init__(self):
@@ -174,11 +174,11 @@ class TraderWindow(QMainWindow,uiForm_class):
     def AutoStockOrder(self):
         hoga_lookup = {'지정가': "00", '시장가': "03"}
 
-        f = open("AutoTrader/buy_list.txt", 'rt',encoding='utf-8')
+        f = open("buy_list.txt", 'rt',encoding='utf-8')
         buy_list = f.readlines()
         f.close()
 
-        f = open("AutoTrader/sell_list.txt", 'rt',encoding='utf-8')
+        f = open("sell_list.txt", 'rt',encoding='utf-8')
         sell_list = f.readlines()
         f.close()
 

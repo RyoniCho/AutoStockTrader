@@ -7,8 +7,12 @@ import time
 
 import os
 #Load pyqt ui file
+def ResourcePath(relativePath):
+    basePath=getattr(sys,'_MEIPASS',os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(basePath,relativePath)
 
-uiForm_class=uic.loadUiType("autoTrader_ui.ui")[0]
+uiFile=ResourcePath('autoTrader_ui.ui')
+uiForm_class=uic.loadUiType(uiFile)[0]
 
 class TraderWindow(QMainWindow,uiForm_class):
     def __init__(self):
